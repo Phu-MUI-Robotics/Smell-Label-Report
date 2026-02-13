@@ -1,0 +1,9 @@
+streamlit
+influxdb
+python-dotenv
+matplotlib
+scipy
+pandas
+numpy
+seaborn
+scikit-learn
