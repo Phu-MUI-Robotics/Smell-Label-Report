@@ -187,6 +187,10 @@ st.write(f"Unix เริ่มต้น : {start_unix}")
 st.write(f"Unix สิ้นสุด : {end_unix}")
 st.markdown("")
 
+# Add : ชื่อสาร
+st.text_input("ชื่อสาร :", key="chemical_name")
+st.markdown("")
+
 # 3) Implementation
 implement_btn = st.button("Implement", type="primary")
 
