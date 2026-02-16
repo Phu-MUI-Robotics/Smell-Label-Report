@@ -12,7 +12,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.ndimage import gaussian_filter1d
 from scipy.signal import find_peaks
-from labeling import radar_peak_window, pca_consistency_plot, box_plot
+from labeling import radar_peak_window, pca_consistency_plot, box_plot, create_report_package
 
 # Load env.
 load_dotenv()
@@ -188,6 +188,7 @@ st.write(f"Unix สิ้นสุด : {end_unix}")
 st.markdown("")
 
 # Add : ชื่อสาร
+st.subheader("3. ชื่อสารเคมี")
 st.text_input("ชื่อสาร :", key="chemical_name")
 st.markdown("")
 
@@ -524,6 +525,13 @@ if st.session_state.get('show_labeling', False):
                     # Prepare files in memory
                     zip_buffer = io.BytesIO()
                     with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zf:
+                        # PDF Report
+                        chemical_name = st.session_state.get('chemical_name', '')
+                        figs_for_report = [fig, radar_fig, pca_fig, box_fig]
+                        pdf_buf = create_report_package(chemical_name, figs_for_report)
+                        pdf_buf.seek(0)
+                        zf.writestr("report.pdf", pdf_buf.read())
+
                         # 1. all_data.csv
                         zf.writestr("all_data.csv", st.session_state['all_data.csv'])
                         # 2. peak_window_raw_all_data.csv

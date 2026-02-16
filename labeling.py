@@ -166,6 +166,19 @@ def box_plot(df_peak_window, sensor_cols, figsize=(10, 6)):
     plt.tight_layout()
     return fig
 
+def create_report_package(chemical_name, figs):
+    buf = io.BytesIO()
+    with PdfPages(buf) as pdf:
+        fig0 = plt.figure(figsize=(8, 3))
+        fig0.text(0.5, 0.5, f"Chemical Name: {chemical_name}", ha='center', va='center', fontsize=18)
+        pdf.savefig(fig0)
+        plt.close(fig0)
+        for fig in figs:
+            if fig is not None:
+                pdf.savefig(fig)
+    buf.seek(0)
+    return buf
+
 
 
 
