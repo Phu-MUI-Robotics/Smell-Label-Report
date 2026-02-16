@@ -7,6 +7,7 @@ from scipy.ndimage import gaussian_filter1d
 from scipy.signal import find_peaks
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
+from matplotlib.backends.backend_pdf import PdfPages
 
 # Function visualize total with peaks and windows
 def plot_total_with_peaks():
