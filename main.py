@@ -513,6 +513,7 @@ if st.session_state.get('show_labeling', False):
                         st.error(f"เกิดข้อผิดพลาดในการสร้าง Box Plot: {e}")
 
                     # --- Download ZIP Button ---
+
                     import zipfile
                     import base64
 
@@ -522,16 +523,15 @@ if st.session_state.get('show_labeling', False):
                         buf.seek(0)
                         return buf.read()
 
-                    # Prepare files in memory
+                    # --- Prepare PDF Report ---
+                    chemical_name = st.session_state.get('chemical_name', '')
+                    figs_for_report = [fig, radar_fig, pca_fig, box_fig]
+                    pdf_buf = create_report_package(chemical_name, figs_for_report)
+                    pdf_buf.seek(0)
+
+                    # --- Prepare ZIP (without report.pdf) ---
                     zip_buffer = io.BytesIO()
                     with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zf:
-                        # PDF Report
-                        chemical_name = st.session_state.get('chemical_name', '')
-                        figs_for_report = [fig, radar_fig, pca_fig, box_fig]
-                        pdf_buf = create_report_package(chemical_name, figs_for_report)
-                        pdf_buf.seek(0)
-                        zf.writestr("report.pdf", pdf_buf.read())
-
                         # 1. all_data.csv
                         zf.writestr("all_data.csv", st.session_state['all_data.csv'])
                         # 2. peak_window_raw_all_data.csv
@@ -559,7 +559,7 @@ if st.session_state.get('show_labeling', False):
                     zip_buffer.seek(0)
 
                     st.markdown('---')
-                    st.subheader('📦 Download All Output as ZIP')
+                    st.subheader('📦 Download Results')
                     # Orange button style for download
                     st.markdown("""
                         <style>
@@ -573,12 +573,22 @@ if st.session_state.get('show_labeling', False):
                         }
                         </style>
                     """, unsafe_allow_html=True)
-                    st.download_button(
-                        label="Download All Results (ZIP)",
-                        data=zip_buffer,
-                        file_name="smell_label_outputs.zip",
-                        mime="application/zip"
-                    )
+
+                    col_zip, col_pdf = st.columns([1,1])
+                    with col_zip:
+                        st.download_button(
+                            label="Download Zip (No Report)",
+                            data=zip_buffer,
+                            file_name="smell_label_outputs.zip",
+                            mime="application/zip"
+                        )
+                    with col_pdf:
+                        st.download_button(
+                            label="Download Report (PDF Only)",
+                            data=pdf_buf,
+                            file_name="report.pdf",
+                            mime="application/pdf"
+                        )
                 
                 if tune_btn:
                     st.session_state['tuning_mode'] = True
